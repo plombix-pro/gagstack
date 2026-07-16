@@ -1,0 +1,7 @@
+/* Trix toolbar icons are black SVGs; force them white on the dark editor */
+trix-toolbar .trix-button {
+  color: #e5e7eb;
+}
+trix-toolbar .trix-button--icon::before {
+  filter: brightness(0) invert(1);
+}
