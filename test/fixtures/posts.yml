@@ -1,0 +1,15 @@
+one:
+  user: one
+  category: one
+  title: Published Post One
+  slug: published-post-one
+  media_type: image
+  status: approved
+
+two:
+  user: two
+  category: one
+  title: Published Post Two
+  slug: published-post-two
+  media_type: image
+  status: approved

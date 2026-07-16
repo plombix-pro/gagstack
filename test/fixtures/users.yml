@@ -29,11 +29,11 @@ admin:
   role: admin
 
 moderator:
-  email_address: moderator@example.com
+  email_address: mod@example.com
   password_digest: <%= password_digest %>
-  username: moderatoruser
+  username: moduser
   date_of_birth: 1990-01-01
   verified_at: 2026-01-01 00:00:00
-  slug: moderatoruser
+  slug: moduser
   reputation: 1000
   role: moderator

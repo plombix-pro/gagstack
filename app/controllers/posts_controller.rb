@@ -28,7 +28,7 @@ class PostsController < ApplicationController
     @post = Current.user.posts.build(post_params)
 
     if params[:media_signed_id].present?
-      @post.media.attach(params[:media_signed_id])
+      attach_uploaded_media(params[:media_signed_id])
     end
 
     if @post.save
@@ -85,5 +85,16 @@ class PostsController < ApplicationController
 
   def post_params
     params.require(:post).permit(:title, :category_id, :media_type, :media, :thumbnail, :perceptual_hash)
+  end
+
+  def attach_uploaded_media(signed_id)
+    blob = ActiveStorage::Blob.find_signed!(signed_id)
+    if blob.attachments.exists?
+      @post.errors.add(:media, "cannot reuse an already published file")
+      return
+    end
+    @post.media.attach(blob)
+  rescue ActiveStorage::Blob::IncorrectDigest
+    @post.errors.add(:media, "invalid media upload")
   end
 end

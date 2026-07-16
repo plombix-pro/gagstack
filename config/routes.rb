@@ -42,8 +42,6 @@ Rails.application.routes.draw do
       end
     end
     resources :posts, only: [:index, :update]
-    get "watermark", to: "watermark#index"
-    post "watermark/extract", to: "watermark#extract"
   end
 
   namespace :admin do
