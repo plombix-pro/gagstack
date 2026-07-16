@@ -7,11 +7,10 @@ module ApiTokenAuthentication
     token = request.headers["Authorization"]&.split(" ")&.last
     return render json: { error: "Unauthorized" }, status: :unauthorized unless token
 
-    api_token = ApiToken.all.find_each do |at|
-      break at if BCrypt::Password.new(at.token_digest).is_password?(token)
-    end
+    digest = Digest::SHA256.hexdigest(token)
+    api_token = ApiToken.find_by(token_hash: digest)
 
-    if api_token
+    if api_token && BCrypt::Password.new(api_token.token_digest).is_password?(token)
       Current.user = api_token.user
     else
       render json: { error: "Unauthorized" }, status: :unauthorized

@@ -3,6 +3,8 @@ class PostsController < ApplicationController
   before_action :require_login, only: [:new, :create]
   before_action :require_post_reputation, only: [:create]
   before_action -> { require_vote_reputation(params[:direction]) }, only: [:vote]
+  rate_limit to: 20, within: 1.minute, only: %i[ create vote ],
+    with: -> { redirect_back fallback_location: root_path, alert: "Slow down — too many requests." }
   before_action :set_post, only: [:show, :vote]
 
   def index

@@ -22,27 +22,28 @@ class ProfilesController < ApplicationController
 
   def update
     @user = Current.user
+    attributes = profile_params
 
     if changing_email?
-      change_email(@user, params[:user][:email_address])
+      change_email(@user, attributes[:email_address])
       @user.save!
-      return redirect_to edit_profile_path, notice: "Verification email sent to #{params[:user][:email_address]}."
+      return redirect_to edit_profile_path, notice: "Verification email sent to #{attributes[:email_address]}."
     end
 
     if changing_username?
       unless @user.can?(:change_username)
         return redirect_to edit_profile_path, alert: "You need 500 reputation to change your username."
       end
-      @user.username = params[:user][:username]
-      @user.slug = params[:user][:username].parameterize
+      @user.username = attributes[:username]
+      @user.slug = attributes[:username].parameterize
     end
 
-    if params[:user][:password].present?
-      @user.password = params[:user][:password]
-      @user.password_confirmation = params[:user][:password_confirmation]
+    if attributes[:password].present?
+      @user.password = attributes[:password]
+      @user.password_confirmation = attributes[:password_confirmation]
     end
 
-    @user.avatar.attach(params[:user][:avatar]) if params[:user][:avatar].present?
+    @user.avatar.attach(attributes[:avatar]) if attributes[:avatar].present?
 
     if @user.save
       redirect_to edit_profile_path, notice: "Profile updated."
@@ -58,29 +59,37 @@ class ProfilesController < ApplicationController
 
   private
 
+  def profile_params
+    params.fetch(:user, {}).permit(:email_address, :username, :password, :password_confirmation, :avatar, :current_password)
+  end
+
   def require_password_for_changes
     return unless sensitive_change?
 
-    unless Current.user.authenticate(params[:user][:current_password])
+    unless Current.user.authenticate(profile_params[:current_password])
       redirect_to edit_profile_path, alert: "Current password is required to make changes."
+      return
     end
   end
 
   def sensitive_change?
-    username = params[:user]&.[](:username)
-    email = params[:user]&.[](:email_address)
-    password = params[:user]&.[](:password)
+    attrs = profile_params
+    username = attrs[:username]
+    email = attrs[:email_address]
+    password = attrs[:password]
     return false unless username.present? || email.present? || password.present?
 
     email.blank? || email != Current.user.email_address || username.present? || password.present?
   end
 
   def changing_email?
-    params[:user][:email_address].present? && params[:user][:email_address] != @user.email_address
+    email = profile_params[:email_address]
+    email.present? && email != @user.email_address
   end
 
   def changing_username?
-    params[:user][:username].present? && params[:user][:username] != @user.username
+    username = profile_params[:username]
+    username.present? && username != @user.username
   end
 
   def change_email(user, new_email)

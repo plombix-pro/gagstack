@@ -2,6 +2,8 @@ class RegistrationsController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
   before_action :redirect_if_signed_in, only: :new
   before_action :require_age_verification, only: :new
+  rate_limit to: 10, within: 10.minutes, only: :create,
+    with: -> { redirect_to new_registration_path, alert: "Too many sign-up attempts. Please try again later." }
 
   def new
     @user = User.new

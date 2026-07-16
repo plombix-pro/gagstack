@@ -3,6 +3,8 @@ class CommentsController < ApplicationController
   before_action :require_comment_reputation, only: [:create]
   before_action -> { require_comment_vote_reputation(params[:direction]) }, only: [:vote]
   before_action :set_comment, only: [:destroy, :vote]
+  rate_limit to: 30, within: 1.minute, only: %i[ create vote ],
+    with: -> { head :too_many_requests }
 
   def create
     @post = Post.find(params[:post_id])

@@ -1,12 +1,19 @@
 class FlagsController < ApplicationController
   before_action :require_login
   before_action -> { require_reputation(:flag_content) }, only: [:create]
+  rate_limit to: 20, within: 1.minute, only: [:create],
+    with: -> { redirect_back fallback_location: root_path, alert: "Slow down — too many flags." }
 
   def create
     if params[:post_id]
       @flaggable = Post.find(params[:post_id])
-    else
+    elsif flaggable_class
       @flaggable = flaggable_class.find(params[:flag][:flaggable_id])
+    end
+
+    unless @flaggable
+      redirect_back fallback_location: root_path, alert: "Invalid flag target"
+      return
     end
 
     @flag = Current.user.flags.new(flag_params.merge(flaggable: @flaggable))
@@ -24,10 +31,12 @@ class FlagsController < ApplicationController
     params.require(:flag).permit(:reason)
   end
 
+  FLAGGABLE_TYPES = {
+    "Post" => Post,
+    "Comment" => Comment
+  }.freeze
+
   def flaggable_class
-    params[:flag][:flaggable_type].constantize
-  rescue NameError
-    redirect_back fallback_location: root_path, alert: "Invalid flaggable type"
-    nil
+    FLAGGABLE_TYPES[params[:flag][:flaggable_type]]
   end
 end

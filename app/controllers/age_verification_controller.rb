@@ -6,7 +6,7 @@ class AgeVerificationController < ApplicationController
   end
 
   def create
-    if ai_verified? || manual_verified?
+    if manual_verified?
       session[:age_verified] = true
       session[:age_verified_at] = Time.current.iso8601
       render json: { status: "ok" }
@@ -17,15 +17,12 @@ class AgeVerificationController < ApplicationController
 
   private
 
-  def ai_verified?
-    params[:method] == "ai" && params[:estimated_age].to_i >= 18
-  end
-
   def manual_verified?
-    return false unless params[:method] == "manual" && params[:dob].present?
+    return false unless params[:dob].present?
 
     dob = Date.parse(params[:dob]) rescue nil
     return false unless dob
+    return false if dob > Date.current
 
     dob <= 18.years.ago.to_date
   end
