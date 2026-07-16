@@ -1,0 +1,39 @@
+<div class="max-w-6xl mx-auto">
+  <h1 class="text-2xl font-bold mb-6">Moderation Logs</h1>
+
+  <div class="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-gray-800 text-gray-500 uppercase text-xs tracking-wider">
+          <th class="px-4 py-3 font-medium">Moderator</th>
+          <th class="px-4 py-3 font-medium">Action</th>
+          <th class="px-4 py-3 font-medium">Target</th>
+          <th class="px-4 py-3 font-medium">Target ID</th>
+          <th class="px-4 py-3 font-medium">Reason</th>
+          <th class="px-4 py-3 font-medium">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @logs.each do |log| %>
+          <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+            <td class="px-4 py-3"><%= link_to log.moderator.username, public_profile_path(log.moderator.slug), class: "text-gray-200 hover:text-amber-400" %></td>
+            <td class="px-4 py-3"><code class="rounded bg-gray-800 px-1.5 py-0.5 text-xs text-amber-400"><%= log.action %></code></td>
+            <td class="px-4 py-3 text-gray-400"><%= log.target_type || "—" %></td>
+            <td class="px-4 py-3 text-gray-400"><%= log.target_id || "—" %></td>
+            <td class="px-4 py-3 text-gray-500 max-w-xs truncate"><%= log.details["reason"].presence || log.details["changes"]&.to_json&.truncate(60) || "—" %></td>
+            <td class="px-4 py-3 text-gray-500"><%= time_ago_in_words(log.created_at) %> ago</td>
+          </tr>
+        <% end %>
+        <% if @logs.empty? %>
+          <tr>
+            <td colspan="6" class="px-4 py-8 text-center text-gray-500">No moderation logs found.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <%= paginate @logs %>
+  </div>
+</div>

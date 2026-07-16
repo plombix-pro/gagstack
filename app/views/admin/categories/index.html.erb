@@ -1,0 +1,42 @@
+<div class="max-w-4xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">Categories</h1>
+    <div class="flex items-center gap-3">
+      <%= link_to "New Category", new_admin_category_path, class: "rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-black hover:bg-amber-400" %>
+      <%= button_tag "Reorder", class: "rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700", disabled: true, title: "Coming soon" %>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-gray-800 text-gray-500 uppercase text-xs tracking-wider">
+          <th class="px-4 py-3 font-medium">Name</th>
+          <th class="px-4 py-3 font-medium">Slug</th>
+          <th class="px-4 py-3 font-medium">Position</th>
+          <th class="px-4 py-3 font-medium">Posts</th>
+          <th class="px-4 py-3 font-medium text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @categories.each do |category| %>
+          <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+            <td class="px-4 py-3 text-gray-200"><%= category.name %></td>
+            <td class="px-4 py-3 text-gray-400"><%= category.slug %></td>
+            <td class="px-4 py-3 text-gray-400"><%= category.position %></td>
+            <td class="px-4 py-3 text-gray-400"><%= category.posts.count %></td>
+            <td class="px-4 py-3 text-right">
+              <%= link_to "Edit", edit_admin_category_path(id: category.id), class: "text-amber-400 hover:text-amber-300 text-xs" %>
+              <%= link_to "Delete", admin_category_path(id: category.id), data: { turbo_method: :delete }, class: "text-red-400 hover:text-red-300 text-xs ml-3" %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @categories.empty? %>
+          <tr>
+            <td colspan="5" class="px-4 py-8 text-center text-gray-500">No categories found.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

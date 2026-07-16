@@ -1,0 +1,51 @@
+<div class="max-w-6xl mx-auto">
+  <h1 class="text-2xl font-bold mb-6">Admin Panel</h1>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+    <div class="rounded-xl border border-gray-800 bg-gray-900 p-4">
+      <p class="text-2xl font-bold text-amber-400"><%= @user_count %></p>
+      <p class="text-xs text-gray-500">Users</p>
+    </div>
+    <div class="rounded-xl border border-gray-800 bg-gray-900 p-4">
+      <p class="text-2xl font-bold text-amber-400"><%= @post_count %></p>
+      <p class="text-xs text-gray-500">Posts</p>
+    </div>
+    <div class="rounded-xl border border-gray-800 bg-gray-900 p-4">
+      <p class="text-2xl font-bold text-red-400"><%= @pending_count %></p>
+      <p class="text-xs text-gray-500">Pending Posts</p>
+    </div>
+    <div class="rounded-xl border border-gray-800 bg-gray-900 p-4">
+      <p class="text-2xl font-bold text-red-400"><%= @flag_count %></p>
+      <p class="text-xs text-gray-500">Open Flags</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div>
+      <h2 class="text-lg font-semibold mb-3">Quick Actions</h2>
+      <div class="space-y-2">
+        <%= link_to "Manage Users", admin_users_path, class: "block rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700" %>
+        <%= link_to "Categories", admin_categories_path, class: "block rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700" %>
+        <%= link_to "Reputation Thresholds", admin_reputation_thresholds_path, class: "block rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700" %>
+        <%= link_to "Moderation Logs", admin_moderation_logs_path, class: "block rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700" %>
+        <%= link_to "Flags", admin_flags_path, class: "block rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700" %>
+        <%= link_to "Flagged Content", content_admin_flags_path, class: "block rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700" %>
+        <%= link_to "Announcements", admin_announcements_path, class: "block rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700" %>
+      </div>
+    </div>
+    <div>
+      <h2 class="text-lg font-semibold mb-3">Recent Activity</h2>
+      <div class="space-y-2">
+        <% @recent_logs.each do |log| %>
+          <div class="text-xs text-gray-500">
+            <%= link_to log.moderator.username, public_profile_path(log.moderator.slug), class: "text-gray-300 hover:text-amber-400" %>
+            <%= log.action %> · <%= time_ago_in_words(log.created_at) %> ago
+          </div>
+        <% end %>
+        <% if @recent_logs.empty? %>
+          <p class="text-sm text-gray-500">No activity yet.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<% password_digest = BCrypt::Password.create("password") %>
+
+one:
+  email_address: one@example.com
+  password_digest: <%= password_digest %>
+  username: userone
+  date_of_birth: 2000-01-01
+  verified_at: 2026-01-01 00:00:00
+  slug: userone
+  reputation: 100
+
+two:
+  email_address: two@example.com
+  password_digest: <%= password_digest %>
+  username: usertwo
+  date_of_birth: 2000-01-01
+  verified_at: 2026-01-01 00:00:00
+  slug: usertwo
+  reputation: 100
+
+admin:
+  email_address: admin@example.com
+  password_digest: <%= password_digest %>
+  username: adminuser
+  date_of_birth: 1990-01-01
+  verified_at: 2026-01-01 00:00:00
+  slug: adminuser
+  reputation: 1000
+  role: admin
+
+moderator:
+  email_address: moderator@example.com
+  password_digest: <%= password_digest %>
+  username: moderatoruser
+  date_of_birth: 1990-01-01
+  verified_at: 2026-01-01 00:00:00
+  slug: moderatoruser
+  reputation: 1000
+  role: moderator

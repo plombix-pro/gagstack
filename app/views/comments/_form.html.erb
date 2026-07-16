@@ -1,0 +1,6 @@
+<%= form_with model: [post, comment], id: "comment_form" do |form| %>
+  <div class="flex gap-2">
+    <%= form.text_area :body, placeholder: "Write a comment...", rows: 2, class: "flex-1 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-gray-100 placeholder-gray-500 focus:border-amber-500 focus:outline-none resize-none" %>
+    <%= form.submit "Post", class: "self-end rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-black hover:bg-amber-400 transition-colors" %>
+  </div>
+<% end %>

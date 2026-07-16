@@ -1,0 +1,34 @@
+<div class="max-w-6xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">Announcements</h1>
+    <%= link_to "New Announcement", new_admin_announcement_path, class: "rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-black hover:bg-amber-400" %>
+  </div>
+
+  <% if @announcements.any? %>
+    <div class="space-y-3">
+      <% @announcements.each do |announcement| %>
+        <div class="rounded-xl border border-gray-800 bg-gray-900 p-4">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="rounded px-1.5 py-0.5 text-xs <%= announcement.active? ? 'bg-green-900/50 text-green-400' : 'bg-gray-800 text-gray-400' %>">
+                  <%= announcement.active? ? "Active" : "Inactive" %>
+                </span>
+                <span class="text-xs text-gray-500">by <%= announcement.author.username %></span>
+              </div>
+              <div class="text-sm text-gray-200 trix-content"><%= announcement.content %></div>
+            </div>
+            <div class="flex flex-col gap-2 shrink-0">
+              <%= link_to "Edit", edit_admin_announcement_path(announcement), class: "rounded-lg bg-gray-800 px-3 py-1 text-xs text-gray-300 hover:bg-gray-700" %>
+              <%= button_to "Delete", admin_announcement_path(announcement), method: :delete,
+                    form: { data: { turbo_confirm: "Delete this announcement?" } },
+                    class: "rounded-lg bg-red-900/50 px-3 py-1 text-xs text-red-400 hover:bg-red-900" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-gray-500">No announcements yet.</p>
+  <% end %>
+</div>

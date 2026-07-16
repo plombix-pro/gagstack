@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "../stylesheets/actiontext.css";
+
+/* Trix toolbar icons are black SVGs; force them white on the dark editor */
+trix-toolbar .trix-button {
+  color: #e5e7eb;
+}
+trix-toolbar .trix-button--icon::before {
+  filter: brightness(0) invert(1);
+}
+
+@theme {
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+}

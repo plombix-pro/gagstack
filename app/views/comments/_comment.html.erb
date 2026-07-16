@@ -1,0 +1,29 @@
+<div class="border-l-2 border-gray-800 pl-4 py-2" id="<%= dom_id(comment) %>" data-controller="comment-vote" data-comment-vote-post-id-value="<%= comment.post_id %>" data-comment-vote-comment-id-value="<%= comment.id %>">
+  <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
+    <%= avatar_tag(comment.user, size: 18) %>
+    <%= link_to comment.user.username, public_profile_path(comment.user.slug), class: "font-medium text-gray-300 hover:text-amber-400" %>
+    <span><%= time_ago_in_words(comment.created_at) %> ago</span>
+  </div>
+  <p class="text-sm text-gray-200 mb-2"><%= comment.body %></p>
+  <div class="flex items-center gap-3 text-xs">
+    <button data-action="comment-vote#up" data-comment-vote-target="upvote" class="flex items-center gap-1 <%= comment.user_vote(Current.user) == true ? 'text-amber-500' : 'text-gray-500 hover:text-amber-400' %>">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+      <span data-comment-vote-target="upvotes"><%= comment.upvotes_count %></span>
+    </button>
+    <button data-action="comment-vote#down" data-comment-vote-target="downvote" class="flex items-center gap-1 <%= comment.user_vote(Current.user) == false ? 'text-red-500' : 'text-gray-500 hover:text-red-400' %>">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      <span data-comment-vote-target="downvotes"><%= comment.downvotes_count %></span>
+    </button>
+    <% if Current.user&.can?(:flag_content) %>
+      <a href="#" onclick="this.nextElementSibling.classList.toggle('hidden'); return false;" class="text-gray-500 hover:text-red-400">Flag</a>
+      <div class="hidden">
+        <%= form_with url: flags_path, local: true, class: "inline-flex items-center gap-1" do %>
+          <%= hidden_field_tag "flag[flaggable_id]", comment.id %>
+          <%= hidden_field_tag "flag[flaggable_type]", "Comment" %>
+          <%= text_field_tag "flag[reason]", nil, placeholder: "Reason", class: "w-32 rounded bg-gray-800 border border-gray-700 text-xs p-1 text-gray-200" %>
+          <%= submit_tag "Go", class: "rounded bg-red-700 px-2 py-0.5 text-xs text-white hover:bg-red-600 cursor-pointer" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

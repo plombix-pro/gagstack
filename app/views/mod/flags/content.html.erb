@@ -1,0 +1,114 @@
+<div class="max-w-6xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">Flagged Content</h1>
+    <div class="flex gap-2 text-sm">
+      <%= link_to "All Flags", mod_flags_path, class: "rounded-lg px-3 py-1.5 bg-gray-800 text-gray-400 hover:text-gray-200" %>
+      <%= link_to "Flagged Content", content_mod_flags_path, class: "rounded-lg px-3 py-1.5 bg-amber-500 text-black" %>
+    </div>
+  </div>
+
+  <div class="space-y-8">
+    <div>
+      <h2 class="text-lg font-semibold mb-3 text-amber-400">Flagged Posts (<%= @flagged_posts.total_count %>)</h2>
+      <% if @flagged_posts.any? %>
+        <div class="space-y-3">
+          <% @flagged_posts.each do |post| %>
+            <div class="rounded-xl border border-gray-800 bg-gray-900 p-4">
+              <div class="flex items-start gap-3">
+                <% if post.thumbnail.attached? %>
+                  <%= image_tag post.thumbnail, class: "w-16 h-16 rounded-lg object-cover shrink-0" %>
+                <% end %>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="rounded bg-red-900/50 px-1.5 py-0.5 text-xs text-red-400 font-medium">Flagged</span>
+                    <span class="text-xs text-gray-500"><%= pluralize(post.flags.pending.count, "flag") %></span>
+                  </div>
+                  <h3 class="font-medium text-sm mb-1">
+                    <%= link_to post.title, post, class: "text-gray-100 hover:text-amber-400" %>
+                  </h3>
+                  <p class="text-xs text-gray-500 mb-2">
+                    by <%= link_to post.user.username, public_profile_path(post.user.slug), class: "text-gray-400 hover:text-amber-400" %>
+                    · <%= time_ago_in_words(post.created_at) %> ago
+                  </p>
+                  <div class="space-y-1">
+                    <% post.flags.each do |flag| %>
+                      <div class="flex items-center justify-between rounded bg-gray-800/50 px-3 py-1.5 text-xs">
+                        <div class="flex items-center gap-2 min-w-0">
+                          <span class="text-gray-400 shrink-0">
+                            <%= link_to flag.user.username, public_profile_path(flag.user.slug), class: "hover:text-amber-400" %>:
+                          </span>
+                          <span class="text-gray-300 truncate"><%= flag.reason %></span>
+                          <span class="shrink-0 rounded px-1.5 py-0.5 text-[10px] <%= flag.pending? ? 'bg-yellow-900/50 text-yellow-400' : flag.reviewed? ? 'bg-red-900/50 text-red-400' : 'bg-green-900/50 text-green-400' %>"><%= flag.status.capitalize %></span>
+                        </div>
+                        <% if flag.pending? %>
+                          <div class="flex gap-1 shrink-0 ml-2">
+                            <%= button_to "Approve", mod_flag_path(flag, status: "reviewed"), method: :patch, class: "rounded bg-green-600 px-2 py-1 text-xs text-white hover:bg-green-500" %>
+                            <%= button_to "Dismiss", mod_flag_path(flag, status: "dismissed"), method: :patch, class: "rounded bg-gray-700 px-2 py-1 text-xs text-gray-300 hover:bg-gray-600" %>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="mt-4">
+          <%= paginate @flagged_posts, param_name: :posts_page %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500">No flagged posts.</p>
+      <% end %>
+    </div>
+
+    <div>
+      <h2 class="text-lg font-semibold mb-3 text-amber-400">Flagged Comments (<%= @flagged_comments.total_count %>)</h2>
+      <% if @flagged_comments.any? %>
+        <div class="space-y-3">
+          <% @flagged_comments.each do |comment| %>
+            <div class="rounded-xl border border-gray-800 bg-gray-900 p-4">
+              <div class="flex items-start gap-2 mb-1">
+                <span class="rounded bg-red-900/50 px-1.5 py-0.5 text-xs text-red-400 font-medium shrink-0">Flagged</span>
+                <span class="text-xs text-gray-500"><%= pluralize(comment.flags.pending.count, "flag") %></span>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
+                <%= avatar_tag(comment.user, size: 16) %>
+                <%= link_to comment.user.username, public_profile_path(comment.user.slug), class: "font-medium text-gray-300 hover:text-amber-400" %>
+                <span>·</span>
+                <%= link_to "on #{comment.post.title}", post_path(comment.post, anchor: dom_id(comment)), class: "text-amber-400 hover:text-amber-300 truncate" %>
+                <span>·</span>
+                <span><%= time_ago_in_words(comment.created_at) %> ago</span>
+              </div>
+              <p class="text-sm text-gray-200 mb-2"><%= comment.body %></p>
+              <div class="space-y-1">
+                <% comment.flags.each do |flag| %>
+                  <div class="flex items-center justify-between rounded bg-gray-800/50 px-3 py-1.5 text-xs">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="text-gray-400 shrink-0">
+                        <%= link_to flag.user.username, public_profile_path(flag.user.slug), class: "hover:text-amber-400" %>:
+                      </span>
+                      <span class="text-gray-300 truncate"><%= flag.reason %></span>
+                      <span class="shrink-0 rounded px-1.5 py-0.5 text-[10px] <%= flag.pending? ? 'bg-yellow-900/50 text-yellow-400' : flag.reviewed? ? 'bg-red-900/50 text-red-400' : 'bg-green-900/50 text-green-400' %>"><%= flag.status.capitalize %></span>
+                    </div>
+                    <% if flag.pending? %>
+                      <div class="flex gap-1 shrink-0 ml-2">
+                        <%= button_to "Approve", mod_flag_path(flag, status: "reviewed"), method: :patch, class: "rounded bg-green-600 px-2 py-1 text-xs text-white hover:bg-green-500" %>
+                        <%= button_to "Dismiss", mod_flag_path(flag, status: "dismissed"), method: :patch, class: "rounded bg-gray-700 px-2 py-1 text-xs text-gray-300 hover:bg-gray-600" %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="mt-4">
+          <%= paginate @flagged_comments, param_name: :comments_page %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500">No flagged comments.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

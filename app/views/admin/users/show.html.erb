@@ -1,0 +1,89 @@
+<%= link_to "&larr; Back to Users".html_safe, admin_users_path, class: "text-sm text-amber-400 hover:text-amber-300 mb-4 inline-block" %>
+
+<div class="max-w-4xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold"><%= @user.username %></h1>
+    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium <%= @user.super_admin? ? 'bg-red-900/50 text-red-300' : @user.admin? ? 'bg-amber-900/50 text-amber-300' : @user.moderator? ? 'bg-blue-900/50 text-blue-300' : 'bg-gray-800 text-gray-400' %>">
+      <%= @user.role %>
+    </span>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="rounded-xl border border-gray-800 bg-gray-900 p-6">
+        <h2 class="text-lg font-semibold mb-4">User Details</h2>
+        <dl class="space-y-3 text-sm">
+          <div class="flex justify-between border-b border-gray-800 pb-2">
+            <dt class="text-gray-500">Email</dt>
+            <dd class="text-gray-200"><%= @user.email_address %></dd>
+          </div>
+          <div class="flex justify-between border-b border-gray-800 pb-2">
+            <dt class="text-gray-500">Reputation</dt>
+            <dd class="text-amber-400 font-semibold"><%= @user.reputation %></dd>
+          </div>
+          <div class="flex justify-between border-b border-gray-800 pb-2">
+            <dt class="text-gray-500">Role</dt>
+            <dd class="text-gray-200 capitalize"><%= @user.role %></dd>
+          </div>
+          <div class="flex justify-between border-b border-gray-800 pb-2">
+            <dt class="text-gray-500">Date of Birth</dt>
+            <dd class="text-gray-200"><%= @user.date_of_birth %></dd>
+          </div>
+          <div class="flex justify-between border-b border-gray-800 pb-2">
+            <dt class="text-gray-500">Verified</dt>
+            <dd class="text-gray-200"><%= @user.verified? ? "Yes (#{@user.verified_at.strftime("%b %d, %Y")})" : "No" %></dd>
+          </div>
+          <div class="flex justify-between border-b border-gray-800 pb-2">
+            <dt class="text-gray-500">Joined</dt>
+            <dd class="text-gray-200"><%= @user.created_at.strftime("%b %d, %Y") %></dd>
+          </div>
+          <div class="flex justify-between border-b border-gray-800 pb-2">
+            <dt class="text-gray-500">Banned</dt>
+            <dd class="<%= @user.banned? ? 'text-red-400' : 'text-gray-200' %>">
+              <%= @user.banned? ? "Yes (since #{@user.banned_at.strftime("%b %d, %Y")})" : "No" %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="rounded-xl border border-gray-800 bg-gray-900 p-6">
+        <h2 class="text-lg font-semibold mb-4">Activity</h2>
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div class="rounded-lg border border-gray-800 bg-gray-800/50 p-3">
+            <p class="text-2xl font-bold text-amber-400"><%= @user.posts.count %></p>
+            <p class="text-xs text-gray-500">Posts</p>
+          </div>
+          <div class="rounded-lg border border-gray-800 bg-gray-800/50 p-3">
+            <p class="text-2xl font-bold text-amber-400"><%= @user.comments.count %></p>
+            <p class="text-xs text-gray-500">Comments</p>
+          </div>
+          <div class="rounded-lg border border-gray-800 bg-gray-800/50 p-3">
+            <p class="text-2xl font-bold text-red-400"><%= @user.flags_count %></p>
+            <p class="text-xs text-gray-500">Flags Received</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="rounded-xl border border-gray-800 bg-gray-900 p-6">
+        <h2 class="text-lg font-semibold mb-4">Actions</h2>
+        <div class="space-y-3">
+          <% if @user.banned? %>
+            <%= button_to "Unban User", admin_user_path(@user), method: :patch, params: { unban: true }, class: "w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-500" %>
+          <% else %>
+            <%= button_to "Ban User", admin_user_path(@user), method: :patch, params: { ban: true }, class: "w-full rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500", data: { turbo_confirm: "Are you sure you want to ban this user?" } %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-gray-800 bg-gray-900 p-6">
+        <h2 class="text-lg font-semibold mb-4">Change Role</h2>
+        <%= form_with model: @user, url: admin_user_path(@user), method: :patch, class: "space-y-3" do |f| %>
+          <%= f.select :role, User.roles.keys.map { |r| [r.humanize, r] }, {}, class: "w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white" %>
+          <%= f.submit "Update Role", class: "w-full rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-black hover:bg-amber-400" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

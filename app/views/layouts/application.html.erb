@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html class="dark">
+  <head>
+    <title><%= content_for(:title) || "GagStack" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="current-user-id" content="<%= Current.user&.id %>">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <script src="/models/face-api.min.js"></script>
+  </head>
+  <body class="bg-gray-950 text-gray-100 min-h-screen">
+    <nav class="fixed top-0 z-50 w-full border-b border-gray-800 bg-gray-950/95 backdrop-blur supports-[backdrop-filter]:bg-gray-950/80">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-14 items-center justify-between">
+          <div class="flex items-center gap-6">
+            <%= link_to "GagStack", root_path, class: "text-xl font-bold text-amber-500" %>
+            <%= form_tag search_path, method: :get, class: "hidden sm:block" do %>
+              <%= text_field_tag :q, params[:q], placeholder: "Search...", class: "w-40 lg:w-56 rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-sm text-gray-100 placeholder-gray-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500" %>
+            <% end %>
+            <div class="hidden sm:flex items-center gap-1">
+              <%= link_to "Hot", root_path, class: "rounded-md px-3 py-1.5 text-sm text-gray-400 hover:text-white #{'text-amber-400' if params[:sort].blank? || params[:sort] == 'hot'}" %>
+              <%= link_to "Trending", root_path(sort: "trending"), class: "rounded-md px-3 py-1.5 text-sm text-gray-400 hover:text-white #{'text-amber-400' if params[:sort] == 'trending'}" %>
+              <%= link_to "Fresh", root_path(sort: "fresh"), class: "rounded-md px-3 py-1.5 text-sm text-gray-400 hover:text-white #{'text-amber-400' if params[:sort] == 'fresh'}" %>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <% top_cats, rest_cats = grouped_categories %>
+            <% top_cats.each do |cat| %>
+              <%= link_to cat.name, category_posts_path(cat), class: "text-sm text-gray-500 hover:text-gray-300 hidden lg:inline" %>
+            <% end %>
+            <% if rest_cats.any? %>
+              <div class="relative hidden lg:inline" data-controller="dropdown">
+                <button data-action="dropdown#toggle" class="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-300">
+                  More
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div class="absolute top-full left-0 mt-1 w-40 rounded-lg border border-gray-800 bg-gray-900 py-1 shadow-xl hidden" data-dropdown-target="menu">
+                  <% rest_cats.each do |cat| %>
+                    <%= link_to cat.name, category_posts_path(cat), class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800" %>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+            <% if Current.user %>
+              <%= link_to "Post", new_post_path, class: "rounded-lg bg-amber-500 px-4 py-1.5 text-sm font-medium text-black hover:bg-amber-400" %>
+              <div class="relative" data-controller="dropdown">
+                <button data-action="dropdown#toggle" class="flex items-center gap-1 text-sm text-gray-300 hover:text-white">
+                  <%= Current.user.username %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div class="absolute right-0 mt-2 w-48 rounded-lg border border-gray-800 bg-gray-900 py-1 shadow-xl hidden" data-dropdown-target="menu">
+                  <%= link_to "Profile", public_profile_path(Current.user.slug), class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800" %>
+                  <%= link_to "Settings", edit_profile_path, class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800" %>
+                  <% if Current.user.reputation.to_i >= 500 || Current.user.moderator? || Current.user.admin? || Current.user.super_admin? %>
+                    <%= link_to "Mod Dashboard", mod_root_path, class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800" %>
+                  <% end %>
+                  <% if Current.user.admin? || Current.user.super_admin? %>
+                    <%= link_to "Admin Panel", admin_root_path, class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800" %>
+                  <% end %>
+                  <%= button_to "Logout", session_path, method: :delete, class: "block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-800" %>
+                </div>
+              </div>
+            <% else %>
+              <%= link_to "Login", sign_in_path, class: "text-sm text-gray-300 hover:text-white" %>
+              <%= link_to "Sign up", sign_up_path, class: "rounded-lg bg-amber-500 px-4 py-1.5 text-sm font-medium text-black hover:bg-amber-400" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 pb-8">
+      <% if notice %><p class="mb-4 text-sm text-green-400"><%= notice %></p><% end %>
+      <% if alert %><p class="mb-4 text-sm text-red-400"><%= alert %></p><% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

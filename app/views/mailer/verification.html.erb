@@ -1,0 +1,6 @@
+<h1>Welcome to GagStack!</h1>
+<p>Hi <%= @user.username %>,</p>
+<p>Please verify your email address by clicking the link below:</p>
+<p><%= link_to "Verify my account", @verification_url %></p>
+<p>This link expires in 24 hours.</p>
+<p>If you didn't create this account, you can ignore this email.</p>

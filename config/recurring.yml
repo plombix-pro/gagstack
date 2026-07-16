@@ -1,0 +1,15 @@
+production:
+  hotness_calculation:
+    class: HotnessCalculationJob
+    schedule: every hour
+  trending_score:
+    class: TrendingScoreJob
+    schedule: every 30 minutes
+
+development:
+  hotness_calculation:
+    class: HotnessCalculationJob
+    schedule: every hour
+  trending_score:
+    class: TrendingScoreJob
+    schedule: every 30 minutes

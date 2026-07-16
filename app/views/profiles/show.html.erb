@@ -1,0 +1,75 @@
+<div class="mx-auto max-w-5xl" data-controller="profile-tabs" data-profile-tabs-active-value="posts">
+  <!-- Profile header -->
+  <div class="rounded-xl border border-gray-800 bg-gray-900 p-6 mb-6">
+    <div class="flex items-center gap-4">
+      <%= avatar_tag(@user, size: 72, show_dots: true, earned: @earned) %>
+      <div class="flex-1 min-w-0">
+        <h1 class="text-xl font-bold truncate"><%= @user.username %></h1>
+        <p class="text-sm text-gray-500">Joined <%= @user.created_at.strftime("%B %Y") %></p>
+      </div>
+      <div class="text-right shrink-0">
+        <div class="text-2xl font-bold text-amber-500"><%= number_with_delimiter(@user.reputation) %></div>
+        <div class="text-xs text-gray-500 tracking-wider">REPUTATION</div>
+      </div>
+    </div>
+
+    <!-- Reputation bar -->
+    <div class="mt-5">
+      <% min_rep = @thresholds.first&.min_reputation || 1 %>
+      <% max_rep = @thresholds.last&.min_reputation || 10000 %>
+      <% progress = [(@user.reputation.to_f / max_rep * 100), 100].min %>
+      <div class="flex justify-between text-xs text-gray-500 mb-1">
+        <span><%= min_rep %></span>
+        <span class="text-amber-400 font-medium"><%= number_with_delimiter(@user.reputation) %></span>
+        <span><%= number_with_delimiter(max_rep) %></span>
+      </div>
+      <div class="h-2 rounded-full bg-gray-800 overflow-hidden">
+        <div class="h-full rounded-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all" style="width: <%= progress %>%"></div>
+      </div>
+      <div class="flex justify-between text-xs text-gray-500 mt-1">
+        <span class="text-gray-400">Privileges earned: <%= @earned.count %>/<%= @thresholds.count %></span>
+        <% if @next %>
+          <span>Next milestone: <%= @next.name.humanize %> at <%= number_with_delimiter(@next.min_reputation) %> rep</span>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="flex flex-wrap gap-1.5 mt-4">
+      <% @thresholds.each do |t| %>
+        <% earned = @user.can?(t.name) %>
+        <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium
+          <%= earned ? 'bg-green-900/50 text-green-400 border border-green-700' : 'bg-gray-800 text-gray-500 border border-gray-700' %>
+          <%= t == @next ? 'ring-1 ring-amber-500' : '' %>">
+          <%= earned ? '✓' : '○' %> <%= t.name.humanize %>
+        </span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex gap-1 border-b border-gray-800 mb-6">
+    <% { "posts" => "Posts", "upvoted" => "Upvoted", "downvoted" => "Downvoted", "commented" => "Commented" }.each do |key, label| %>
+      <button data-action="profile-tabs#show" data-tab="<%= key %>"
+        class="px-4 py-2.5 text-sm font-medium transition-colors
+          data-[active=true]:text-amber-400 data-[active=true]:border-b-2 data-[active=true]:border-amber-400
+          text-gray-500 hover:text-gray-300">
+        <%= label %>
+      </button>
+    <% end %>
+  </div>
+
+  <!-- Tab panels -->
+  <% [["posts", @posts], ["upvoted", @upvoted_posts], ["downvoted", @downvoted_posts], ["commented", @commented_posts]].each do |key, posts| %>
+    <div data-profile-tabs-target="panel" data-tab="<%= key %>"
+      class="<%= key == 'posts' ? '' : 'hidden' %>">
+      <% if posts.any? %>
+        <div class="columns-2 gap-4 space-y-4">
+          <%= render partial: "posts/post_card", collection: posts, as: :post %>
+        </div>
+      <% else %>
+        <p class="text-center text-gray-500 py-12">No posts yet.</p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

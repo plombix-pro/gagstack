@@ -1,0 +1,74 @@
+<div class="max-w-6xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">Flagged Items</h1>
+    <div class="flex gap-2 text-sm">
+      <%= link_to "All", mod_flags_path, class: "rounded-lg px-3 py-1.5 #{@status.blank? ? 'bg-amber-500 text-black' : 'bg-gray-800 text-gray-400 hover:text-gray-200'}" %>
+      <%= link_to "Pending", mod_flags_path(status: "pending"), class: "rounded-lg px-3 py-1.5 #{@status == 'pending' ? 'bg-amber-500 text-black' : 'bg-gray-800 text-gray-400 hover:text-gray-200'}" %>
+      <%= link_to "Reviewed", mod_flags_path(status: "reviewed"), class: "rounded-lg px-3 py-1.5 #{@status == 'reviewed' ? 'bg-amber-500 text-black' : 'bg-gray-800 text-gray-400 hover:text-gray-200'}" %>
+      <%= link_to "Dismissed", mod_flags_path(status: "dismissed"), class: "rounded-lg px-3 py-1.5 #{@status == 'dismissed' ? 'bg-amber-500 text-black' : 'bg-gray-800 text-gray-400 hover:text-gray-200'}" %>
+      <%= link_to "Flagged Content", content_mod_flags_path, class: "rounded-lg px-3 py-1.5 bg-gray-800 text-gray-400 hover:text-gray-200" %>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-gray-800 text-gray-500 uppercase text-xs tracking-wider">
+          <th class="px-4 py-3 font-medium">Flagger</th>
+          <th class="px-4 py-3 font-medium">Type</th>
+          <th class="px-4 py-3 font-medium">Content</th>
+          <th class="px-4 py-3 font-medium">Reason</th>
+          <th class="px-4 py-3 font-medium">Status</th>
+          <th class="px-4 py-3 font-medium">Date</th>
+          <th class="px-4 py-3 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @flags.each do |flag| %>
+          <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+            <td class="px-4 py-3"><%= link_to flag.user.username, public_profile_path(flag.user.slug), class: "text-gray-200 hover:text-amber-400" %></td>
+            <td class="px-4 py-3">
+              <span class="rounded bg-gray-800 px-1.5 py-0.5 text-xs text-gray-400"><%= flag.flaggable_type %></span>
+            </td>
+            <td class="px-4 py-3 max-w-xs truncate">
+              <% if flag.flaggable.is_a?(Post) %>
+                <%= link_to flag.flaggable.title, flag.flaggable, class: "text-amber-400 hover:text-amber-300" %>
+              <% elsif flag.flaggable.is_a?(Comment) %>
+                <%= link_to "comment on #{flag.flaggable.post.title}", post_path(flag.flaggable.post, anchor: dom_id(flag.flaggable)), class: "text-amber-400 hover:text-amber-300" %>
+              <% else %>
+                <span class="text-gray-500">deleted</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-gray-500 max-w-xs truncate"><%= flag.reason %></td>
+            <td class="px-4 py-3">
+              <% case flag.status %>
+              <% when "pending" %>
+                <span class="rounded bg-yellow-900/50 px-1.5 py-0.5 text-xs text-yellow-400">Pending</span>
+              <% when "reviewed" %>
+                <span class="rounded bg-red-900/50 px-1.5 py-0.5 text-xs text-red-400">Reviewed</span>
+              <% when "dismissed" %>
+                <span class="rounded bg-green-900/50 px-1.5 py-0.5 text-xs text-green-400">Dismissed</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-gray-500"><%= time_ago_in_words(flag.created_at) %> ago</td>
+            <td class="px-4 py-3">
+              <% if flag.pending? %>
+                <%= button_to "Approve", mod_flag_path(flag, status: "reviewed"), method: :patch, class: "rounded bg-green-600 px-2 py-1 text-xs text-white hover:bg-green-500 mr-1" %>
+                <%= button_to "Dismiss", mod_flag_path(flag, status: "dismissed"), method: :patch, class: "rounded bg-gray-700 px-2 py-1 text-xs text-gray-300 hover:bg-gray-600" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @flags.empty? %>
+          <tr>
+            <td colspan="7" class="px-4 py-8 text-center text-gray-500">No flags found.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <%= paginate @flags %>
+  </div>
+</div>

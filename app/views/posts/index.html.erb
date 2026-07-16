@@ -1,0 +1,22 @@
+<div class="flex gap-2 mb-6">
+  <span class="text-sm text-gray-500 self-center">Sort:</span>
+  <%= link_to "Hot", params.key?(:category_id) ? category_posts_path(@category, sort: nil) : root_path, class: "rounded-lg px-3 py-1 text-sm #{params[:sort].blank? || params[:sort] == 'hot' ? 'bg-amber-500 text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}" %>
+  <%= link_to "Fresh", params.key?(:category_id) ? category_posts_path(@category, sort: "fresh") : root_path(sort: "fresh"), class: "rounded-lg px-3 py-1 text-sm #{params[:sort] == 'fresh' ? 'bg-amber-500 text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}" %>
+  <%= link_to "Trending", params.key?(:category_id) ? category_posts_path(@category, sort: "trending") : root_path(sort: "trending"), class: "rounded-lg px-3 py-1 text-sm #{params[:sort] == 'trending' ? 'bg-amber-500 text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}" %>
+</div>
+
+<% if @category %>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold"><%= @category.name %></h1>
+  </div>
+<% end %>
+
+<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4" id="posts">
+  <%= render partial: "posts/post_card", collection: @posts, as: :post %>
+</div>
+
+<% if @posts.any? %>
+  <div class="text-center py-8">
+    <%= link_to "Load more", url_for(sort: params[:sort], cursor: @posts.last.created_at.iso8601(6)), class: "rounded-lg bg-gray-800 px-6 py-2 text-sm text-gray-300 hover:bg-gray-700", data: { turbo_stream: true } %>
+  </div>
+<% end %>

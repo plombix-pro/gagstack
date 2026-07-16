@@ -1,0 +1,5 @@
+<h1>Confirm your email change</h1>
+<p>You requested to change your GagStack account email to <strong><%= @user.unconfirmed_email %></strong>.</p>
+<p>Click the link below to confirm this change:</p>
+<p><%= link_to "Confirm email change", @confirmation_url %></p>
+<p>This link expires in 7 days. If you didn't request this change, you can safely ignore this email.</p>

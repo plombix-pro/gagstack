@@ -1,0 +1,14 @@
+<div class="max-w-md mx-auto">
+  <h1 class="text-2xl font-bold mb-6">Edit: <%= @threshold.name.humanize %></h1>
+  <%= form_with model: @threshold, url: admin_reputation_threshold_path(@threshold), method: :patch, local: true, class: "space-y-4" do |form| %>
+    <div>
+      <%= form.label :min_reputation, "Minimum Reputation", class: "block text-sm font-medium text-gray-300 mb-1" %>
+      <%= form.number_field :min_reputation, class: "w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-gray-100 focus:border-amber-500 focus:outline-none" %>
+    </div>
+    <div>
+      <%= form.label :description, class: "block text-sm font-medium text-gray-300 mb-1" %>
+      <%= form.text_area :description, rows: 3, class: "w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-gray-100 focus:border-amber-500 focus:outline-none" %>
+    </div>
+    <%= form.submit "Update", class: "w-full rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-black hover:bg-amber-400" %>
+  <% end %>
+</div>

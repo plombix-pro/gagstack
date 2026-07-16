@@ -1,0 +1,58 @@
+<div class="max-w-6xl mx-auto">
+  <h1 class="text-2xl font-bold mb-6">Users</h1>
+
+  <div class="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-gray-800 text-gray-500 uppercase text-xs tracking-wider">
+          <th class="px-4 py-3 font-medium">Username</th>
+          <th class="px-4 py-3 font-medium">Email</th>
+          <th class="px-4 py-3 font-medium">Rep</th>
+          <th class="px-4 py-3 font-medium">Role</th>
+          <th class="px-4 py-3 font-medium">Banned</th>
+          <th class="px-4 py-3 font-medium">Joined</th>
+          <th class="px-4 py-3 font-medium text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+            <td class="px-4 py-3 text-gray-200"><%= link_to user.username, admin_user_path(user), class: "hover:text-amber-400" %></td>
+            <td class="px-4 py-3 text-gray-400"><%= user.email_address %></td>
+            <td class="px-4 py-3 text-amber-400"><%= user.reputation %></td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium <%= user.super_admin? ? 'bg-red-900/50 text-red-300' : user.admin? ? 'bg-amber-900/50 text-amber-300' : user.moderator? ? 'bg-blue-900/50 text-blue-300' : 'bg-gray-800 text-gray-400' %>">
+                <%= user.role %>
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <% if user.banned? %>
+                <span class="text-red-400">Yes</span>
+              <% else %>
+                <span class="text-gray-500">No</span>
+              <% end %>
+            </td>
+            <td class="px-4 py-3 text-gray-500"><%= user.created_at.strftime("%b %d, %Y") %></td>
+            <td class="px-4 py-3 text-right space-x-2">
+              <%= link_to "Show", admin_user_path(user), class: "text-amber-400 hover:text-amber-300 text-xs" %>
+              <% if user.banned? %>
+                <%= button_to "Unban", admin_user_path(user), method: :patch, params: { unban: true }, class: "text-green-400 hover:text-green-300 text-xs" %>
+              <% else %>
+                <%= button_to "Ban", admin_user_path(user), method: :patch, params: { ban: true }, class: "text-red-400 hover:text-red-300 text-xs", data: { turbo_confirm: "Ban this user?" } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @users.empty? %>
+          <tr>
+            <td colspan="7" class="px-4 py-8 text-center text-gray-500">No users found.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <%= paginate @users %>
+  </div>
+</div>

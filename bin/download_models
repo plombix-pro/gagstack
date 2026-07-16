@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+BASE_URL="https://github.com/justadudewhohacks/face-api.js/raw/master/weights"
+MODELS_DIR="public/models"
+
+echo "==> Downloading face-api.js age estimation models..."
+
+mkdir -p "$MODELS_DIR"
+
+# Tiny face detector
+curl -fL "$BASE_URL/tiny_face_detector_model-weights_manifest.json" -o "$MODELS_DIR/tiny_face_detector_model-weights_manifest.json"
+curl -fL "$BASE_URL/tiny_face_detector_model-shard1" -o "$MODELS_DIR/tiny_face_detector_model-shard1"
+
+# Face landmark (needed for alignment before age estimation)
+curl -fL "$BASE_URL/face_landmark_68_model-weights_manifest.json" -o "$MODELS_DIR/face_landmark_68_model-weights_manifest.json"
+curl -fL "$BASE_URL/face_landmark_68_model-shard1" -o "$MODELS_DIR/face_landmark_68_model-shard1"
+
+# Age & gender model
+curl -fL "$BASE_URL/age_gender_model-weights_manifest.json" -o "$MODELS_DIR/age_gender_model-weights_manifest.json"
+curl -fL "$BASE_URL/age_gender_model-shard1" -o "$MODELS_DIR/age_gender_model-shard1"
+
+# face-api.js library
+curl -fL "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js" -o "$MODELS_DIR/face-api.min.js"
+
+echo "==> Models downloaded to $MODELS_DIR/"
+echo "Size:"
+du -sh "$MODELS_DIR"/*
+
+# Add to gitignore
+if ! grep -q "public/models/" .gitignore 2>/dev/null; then
+  cat >> .gitignore << 'EOF'
+
+# Face-api model weights (large binary files)
+public/models/
+EOF
+fi
