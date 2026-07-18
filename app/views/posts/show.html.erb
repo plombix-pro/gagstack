@@ -1,4 +1,4 @@
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto" data-controller="keyboard-nav" data-keyboard-nav-prev-value="<%= @previous_post ? post_path(@previous_post) : '' %>" data-keyboard-nav-next-value="<%= @next_post ? post_path(@next_post) : '' %>">
   <div class="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
     <div class="p-4 border-b border-gray-800">
       <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
@@ -11,7 +11,7 @@
       <h1 class="text-xl font-bold"><%= @post.title %></h1>
     </div>
 
-    <div class="bg-black flex items-center justify-center">
+    <div class="bg-black flex items-center justify-center cursor-zoom-in" onclick="(this.querySelector('img,video')||this).requestFullscreen()">
       <% if @post.image? %>
         <%= image_tag @post.media, class: "max-h-[80vh] w-auto", loading: "lazy" %>
       <% elsif @post.gif? %>
@@ -68,6 +68,25 @@
         <%= render partial: "comments/comment_tree", locals: { comments: @comments } %>
       <% else %>
         <p class="text-sm text-gray-500">No comments yet.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="flex justify-between mt-6 text-sm">
+    <div>
+      <% if @previous_post %>
+        <%= link_to post_path(@previous_post), class: "flex items-center gap-1 text-gray-400 hover:text-amber-400" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          Previous
+        <% end %>
+      <% end %>
+    </div>
+    <div>
+      <% if @next_post %>
+        <%= link_to post_path(@next_post), class: "flex items-center gap-1 text-gray-400 hover:text-amber-400" do %>
+          Next
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <% end %>
       <% end %>
     </div>
   </div>
