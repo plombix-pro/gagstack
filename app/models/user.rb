@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :flags, dependent: :destroy
   has_many :comment_votes, dependent: :destroy
   has_many :api_tokens, dependent: :destroy
+  has_many :moderation_logs, foreign_key: :moderator_id, dependent: :destroy
   has_one_attached :avatar
 
   enum :role, { user: "user", moderator: "moderator", admin: "admin", super_admin: "super_admin" }

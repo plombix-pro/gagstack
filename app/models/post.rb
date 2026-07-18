@@ -30,6 +30,14 @@ class Post < ApplicationRecord
     votes.find_by(user: user)&.upvoted
   end
 
+  def previous_post
+    Post.approved.where("id < ?", id).order(id: :desc).first
+  end
+
+  def next_post
+    Post.approved.where("id > ?", id).order(id: :asc).first
+  end
+
   private
 
   def media_must_be_attached
@@ -41,7 +49,6 @@ class Post < ApplicationRecord
   end
 
   def check_reputation_threshold
-    threshold = ReputationThreshold.find_by(name: "post_images")&.min_reputation || 10
-    update(status: :pending) if user.reputation < threshold
+    update(status: :pending) if user.posts.approved.count < 5
   end
 end
