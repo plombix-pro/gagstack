@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_16_133401) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_18_200901) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -92,7 +92,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_133401) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.string "ancestry"
     t.text "body", null: false
     t.datetime "created_at", null: false
     t.integer "downvotes_count", default: 0
@@ -101,8 +100,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_133401) do
     t.datetime "updated_at", null: false
     t.integer "upvotes_count", default: 0
     t.bigint "user_id", null: false
-    t.index ["ancestry"], name: "index_comments_on_ancestry"
-    t.index ["post_id", "ancestry"], name: "index_comments_on_post_id_and_ancestry"
     t.index ["post_id"], name: "index_comments_on_post_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end

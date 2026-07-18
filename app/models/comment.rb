@@ -1,5 +1,4 @@
 class Comment < ApplicationRecord
-  has_ancestry
   belongs_to :user
   belongs_to :post, counter_cache: true
   has_many :comment_votes, dependent: :destroy

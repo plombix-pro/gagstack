@@ -8,7 +8,7 @@ class CommentsController < ApplicationController
 
   def create
     @post = Post.find(params[:post_id])
-    @comment = @post.comments.new(comment_params.merge(user: Current.user, parent_id: params[:parent_id]))
+    @comment = @post.comments.new(comment_params.merge(user: Current.user))
 
     if @comment.save
       respond_to do |format|
@@ -52,7 +52,7 @@ class CommentsController < ApplicationController
     RepChangeJob.perform_later(user: @comment.user, delta: result) if result != 0
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.replace("comment_#{@comment.id}", partial: "comments/comment_tree", locals: { comments: { @comment => @comment.children.arrange } }) }
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("comment_#{@comment.id}", partial: "comments/comment", locals: { comment: @comment }) }
     end
   end
 

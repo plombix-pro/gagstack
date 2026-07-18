@@ -71,7 +71,6 @@ group :test do
   gem "simplecov", require: false
 end
 
-gem "ancestry"
 gem "counter_culture"
 gem "kaminari"
 gem "rack-attack"
