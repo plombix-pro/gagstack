@@ -1,24 +1,27 @@
 class PostsController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
   before_action :require_login, only: [:new, :create]
-  before_action :require_post_reputation, only: [:create]
   before_action -> { require_vote_reputation(params[:direction]) }, only: [:vote]
   rate_limit to: 20, within: 1.minute, only: %i[ create vote ],
     with: -> { redirect_back fallback_location: root_path, alert: "Slow down — too many requests." }
   before_action :set_post, only: [:show, :vote]
+  before_action :redirect_nsfw, only: [:show]
 
   def index
     @category = Category.find_by!(slug: params[:category_id]) if params[:category_id]
-    @posts = FeedBuilder.new(category: @category, sort: params[:sort] || "hot", cursor: params[:cursor]).call
+    @feed_builder = FeedBuilder.new(category: @category, sort: params[:sort] || "hot", cursor: params[:cursor], exclude_nsfw: !authenticated?)
+    @posts = @feed_builder.call
     respond_to do |format|
       format.html
-      format.turbo_stream { render formats: :html }
+      format.turbo_stream
     end
   end
 
   def show
-    @comments = @post.comments.visible.arrange(order: :created_at)
+    @comments = @post.comments.visible.order(created_at: :desc)
     @comment = @post.comments.new
+    @previous_post = @post.previous_post
+    @next_post = @post.next_post
   end
 
   def new
@@ -74,8 +77,8 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
   end
 
-  def require_post_reputation
-    require_reputation(:post_images) unless Current.user&.moderator? || Current.user&.admin? || Current.user&.super_admin?
+  def redirect_nsfw
+    redirect_to root_path if !authenticated? && @post.category.name.match?(/nsfw/i)
   end
 
   def require_vote_reputation(direction)
