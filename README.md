@@ -5,9 +5,10 @@ content feed. Users browse a curated stream of images and GIFs, vote, comment,
 and flag content, while a lightweight reputation and moderation system keeps the
 firehose usable.
 
-GagStack is built API-first: every feature available in the UI is also exposed
-through a versioned JSON API, so the same backend can power a mobile app or a
-third-party client.
+Basicaly a 9gag clone-ish , but better . No server costs for media processing 
+No bot or child are allowed : facial age detemination , and reputation / moderation system to ensure quality content 
+
+
 
 ## Features
 
@@ -115,4 +116,6 @@ deployments. See `config/deploy.yml` and the Kamal docs for setup.
 
 ## License
 
-TODO: add your license.
+Creative Commons NonCommercial (CC BY-NC) 
+
+means that you can do anything you want with it except comercial usages

@@ -40,3 +40,27 @@
 # Face-api model weights (large binary files)
 public/models/
 .superpowers/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+*.sublime-*
+
+# Node modules (only relevant if you ever add a JS package manager)
+/node_modules
+
+# Solid Queue / Cache / Cable SQLite databases (Rails 8 dev/test artifacts)
+/storage/*.sqlite3
+/storage/*.sqlite3-*
+
+# Coverage reports
+/coverage/
+.simplecov
+
+# Local override files
+/config/local_env.yml
+*.local
