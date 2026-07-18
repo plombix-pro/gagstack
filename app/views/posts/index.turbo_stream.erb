@@ -1,0 +1,11 @@
+<%= turbo_stream.append "posts" do %>
+  <%= render partial: "posts/post_card", collection: @posts, as: :post %>
+<% end %>
+
+<%= turbo_stream.replace "load_more" do %>
+  <% if @posts.size >= FeedBuilder::PER_PAGE %>
+    <%= link_to "Load more", url_for(sort: params[:sort], cursor: @feed_builder.cursor_value(@posts.last)), class: "rounded-lg bg-gray-800 px-6 py-2 text-sm text-gray-300 hover:bg-gray-700", data: { turbo_stream: true } %>
+  <% else %>
+    <p class="text-gray-500 text-sm">No more posts</p>
+  <% end %>
+<% end %>
